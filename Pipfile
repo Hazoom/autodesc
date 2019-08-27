@@ -6,6 +6,8 @@ verify_ssl = true
 [dev-packages]
 pep8 = "*"
 more-itertools = "*"
+pylint = "*"
+pycodestyle = "*"
 pandas = "*"
 pypeln = "*"
 boto3 = "*"
