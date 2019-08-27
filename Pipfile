@@ -1,0 +1,22 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pep8 = "*"
+more-itertools = "*"
+pandas = "*"
+pypeln = "*"
+boto3 = "*"
+scikit-learn = "*"
+matplotlib = "*"
+ast = "*"
+keras = "*"
+nmslib = "*"
+
+[packages]
+argcomplete = "*"
+
+[requires]
+python_version = "3.6"
