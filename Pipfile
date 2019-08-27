@@ -13,7 +13,6 @@ pypeln = "*"
 boto3 = "*"
 scikit-learn = "*"
 matplotlib = "*"
-ast = "*"
 keras = "*"
 nmslib = "*"
 
