@@ -3,21 +3,20 @@ name = "pypi"
 url = "https://pypi.org/simple"
 verify_ssl = true
 
-[dev-packages]
+[packages]
+argcomplete = "*"
 pep8 = "*"
 more-itertools = "*"
 pylint = "*"
 pycodestyle = "*"
 pandas = "*"
-pypeln = "*"
-boto3 = "*"
 scikit-learn = "*"
 matplotlib = "*"
+tensorflow = "*"
 keras = "*"
 nmslib = "*"
-
-[packages]
-argcomplete = "*"
+textacy = "*"
+dill = "*"
 
 [requires]
 python_version = "3.6"
