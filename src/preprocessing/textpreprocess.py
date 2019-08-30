@@ -9,6 +9,22 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer
 
 
+def load_text_preprocessor(file_path):
+    """
+    Load TextPreprocessor dpickle file from disk.
+    :param file_path: str
+        File path on disk
+    :return:
+    text_pre_processor: TextPreprocessor
+    n_tokens: int
+    """
+    with open(file_path, 'rb') as in_fp:
+        text_pre_processor = dill.load(in_fp)
+    n_tokens = text_pre_processor.n_tokens + 1  # + 1 because of padding token
+    print(f'Loaded model: {file_path}. Number of tokens: {n_tokens}')
+    return text_pre_processor, n_tokens
+
+
 class TextPreprocessor:
     def __init__(self,
                  append_borders: bool = False,
@@ -73,7 +89,7 @@ class TextPreprocessor:
         self.tokenizer.fit_on_texts(processed_texts)
         self.token_to_id = self.tokenizer.word_index
         self.id_to_token = {value: key for key, value in self.token_to_id.items()}
-        self.n_tokens = max(self.tokenizer.word_index.values())
+        self.n_tokens = len(self.token_to_id)
         print('Finished processing texts')
 
         return processed_texts
@@ -107,7 +123,7 @@ def parse_data(input_file, output_dir):
     train_title_vectors = title_pre_processor.fit_transform(train_df['title'].tolist())
     print('Finished fitting pre-processor on titles (1/2)')
 
-    code_pre_processor = TextPreprocessor(append_borders=False, n_vocab=20000, max_length=128)
+    code_pre_processor = TextPreprocessor(append_borders=False, n_vocab=20000, max_length=64)
 
     print('Fitting pre-processor on codes... (2/2)')
     train_code_vectors = code_pre_processor.fit_transform(train_df['answer_code'].astype(str).tolist())
