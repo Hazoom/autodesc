@@ -22,14 +22,11 @@ def split_data(input_file, output_dir, split_ratio):
     code_df = pd.read_csv(input_file)
 
     train, test = train_test_split(code_df, train_size=split_ratio, shuffle=True, random_state=RANDOM_STATE)
-    train, validation = train_test_split(train, train_size=0.9, random_state=RANDOM_STATE)
 
     train = _reset_index(train)
     test = _reset_index(test)
-    validation = _reset_index(validation)
 
     print(f'Train set rows: {train.shape[0]:,}')
-    print(f'Validation set rows: {validation.shape[0]:,}')
     print(f'Test set rows: {test.shape[0]:,}')
 
     if not os.path.exists(output_dir):
@@ -37,7 +34,6 @@ def split_data(input_file, output_dir, split_ratio):
 
     _write_to_csv(train, output_dir, 'train.csv')
     _write_to_csv(test, output_dir, 'test.csv')
-    _write_to_csv(validation, output_dir, 'validation.csv')
 
 
 def main():

@@ -27,10 +27,11 @@ import argcomplete
 import numpy as np
 from keras import optimizers
 from keras.callbacks import CSVLogger, ModelCheckpoint
-from keras.layers import Input, GRU, Dense, Embedding, BatchNormalization
+from keras.layers import Input, GRU, Dense, Embedding, BatchNormalization, TimeDistributed, Concatenate
 from keras.models import Model
 
 from preprocessing import textpreprocess
+from seq2seq.layers.attention import AttentionLayer
 
 
 def _load_encoder_inputs(file_path):
@@ -98,14 +99,15 @@ def build_model(word_emb_dim,
     encoder_inputs = Input(shape=(encoder_seq_len,), name='Encoder-Input')
 
     # Word embedding for encoder (i.e. code)
-    x_layer = Embedding(n_encoder_tokens, word_emb_dim, name='Code-Embedding', mask_zero=False)(encoder_inputs)
-    x_layer = BatchNormalization(name='Encoder-Batchnorm-1')(x_layer)
+    encoder_embeddings = Embedding(n_encoder_tokens, word_emb_dim,
+                                   name='Code-Embedding', mask_zero=False)(encoder_inputs)
+    encoder_bn = BatchNormalization(name='Encoder-Batchnorm-1')(encoder_embeddings)
 
     # We do not need the `encoder_output` just the hidden state.
-    _, state_h = GRU(hidden_state_dim, return_state=True, name='Encoder-Last-GRU', dropout=.5)(x_layer)
+    _, encoder_state = GRU(hidden_state_dim, return_state=True, name='Encoder-Last-GRU', dropout=.5)(encoder_bn)
 
     # Encapsulate the encoder as a separate entity so we can just encode without decoding if we want to
-    encoder_model = Model(inputs=encoder_inputs, outputs=state_h, name='Encoder-Model')
+    encoder_model = Model(inputs=encoder_inputs, outputs=encoder_state, name='Encoder-Model')
 
     seq2seq_encoder_out = encoder_model(encoder_inputs)
 
@@ -119,11 +121,19 @@ def build_model(word_emb_dim,
     # Set up the decoder, using `decoder_state_input` as initial state.
     decoder_gru = GRU(hidden_state_dim, return_state=True, return_sequences=True, name='Decoder-GRU', dropout=.5)
     decoder_gru_output, _ = decoder_gru(dec_bn, initial_state=seq2seq_encoder_out)
-    x_layer = BatchNormalization(name='Decoder-Batchnorm-2')(decoder_gru_output)
+    decoder_bn = BatchNormalization(name='Decoder-Batchnorm-2')(decoder_gru_output)
 
-    # Dense layer for prediction
+    # add attention layer
+    # attn_layer = AttentionLayer(name='attention_layer')
+    # attn_out, attn_states = attn_layer([seq2seq_encoder_out, decoder_gru_output])
+
+    # concatenate the attn_out and decoder_out as an input to the softmax layer
+    # decoder_concat_input = Concatenate(axis=-1, name='concat_layer')([decoder_gru_output, attn_out])
+
+    # Define TimeDistributed Softmax layer and provide decoder_concat_input as the input
     decoder_dense = Dense(n_decoder_tokens, activation='softmax', name='Final-Output-Dense')
-    decoder_outputs = decoder_dense(x_layer)
+    dense_time = TimeDistributed(decoder_dense, name='time_distributed_layer')
+    decoder_outputs = dense_time(decoder_bn)
 
     seq2seq_model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
     return seq2seq_model
