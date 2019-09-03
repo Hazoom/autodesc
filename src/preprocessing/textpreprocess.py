@@ -37,7 +37,7 @@ class TextPreprocessor:
         self.max_length = max_length
         self.n_vocab = n_vocab
         self.append_borders = append_borders
-        self.tokenizer = Tokenizer(n_vocab, oov_token='<OOV>')
+        self.tokenizer = Tokenizer(num_words=n_vocab, oov_token='<OOV>')
         self.start_token = '<START>'
         self.end_token = '<END>'
         self.token_to_id = None
@@ -89,7 +89,7 @@ class TextPreprocessor:
         self.tokenizer.fit_on_texts(processed_texts)
         self.token_to_id = self.tokenizer.word_index
         self.id_to_token = {value: key for key, value in self.token_to_id.items()}
-        self.n_tokens = len(self.token_to_id)
+        self.n_tokens = self.n_vocab
         print('Finished processing texts')
 
         return processed_texts
@@ -116,14 +116,14 @@ def _save_vectors(train_title_vectors, output_dir: str, file_name: str):
 
 def parse_data(input_file, output_dir):
     train_df = pd.read_csv(input_file)
-    title_pre_processor = TextPreprocessor(append_borders=True, n_vocab=10000, max_length=128,
+    title_pre_processor = TextPreprocessor(append_borders=True, n_vocab=10000, max_length=64,
                                            truncating='post', padding='post')
 
     print('Fitting pre-processor on titles... (1/2)')
     train_title_vectors = title_pre_processor.fit_transform(train_df['title'].tolist())
     print('Finished fitting pre-processor on titles (1/2)')
 
-    code_pre_processor = TextPreprocessor(append_borders=False, n_vocab=20000, max_length=64)
+    code_pre_processor = TextPreprocessor(append_borders=False, n_vocab=20000, max_length=30)
 
     print('Fitting pre-processor on codes... (2/2)')
     train_code_vectors = code_pre_processor.fit_transform(train_df['answer_code'].astype(str).tolist())
