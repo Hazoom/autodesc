@@ -79,7 +79,7 @@ def train(train_code_vectors_file: str,
         os.path.join(output_dir, 'model.epoch{{epoch:02d}}-val{{val_loss:.5f}}.hdf5'),
         save_best_only=True)
 
-    batch_size = 256
+    batch_size = 32
     epochs = 16
     model.fit([encoder_vectors, decoder_input_vectors], np.expand_dims(decoder_target_vectors, -1),
               batch_size=batch_size,
