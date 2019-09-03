@@ -71,7 +71,9 @@ def train(train_code_vectors_file: str,
 
     model.summary()
 
-    model.compile(optimizer=optimizers.Nadam(lr=0.00005), loss='sparse_categorical_crossentropy')
+    model.compile(optimizer=optimizers.Nadam(lr=0.00005),
+                  loss='sparse_categorical_crossentropy',
+                  metrics=['sparse_categorical_crossentropy'])
 
     csv_logger = CSVLogger('model.log')
 
