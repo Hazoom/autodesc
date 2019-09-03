@@ -2,31 +2,32 @@ import re
 import argparse
 import argcomplete
 import pandas as pd
-import textacy
 
 CODE_RE = re.compile(r'<pre><code>(.+?)</code></pre>', re.DOTALL)
 
 
 def _extract_code(code_text):
     matches = [match.group(1) for match in re.finditer(CODE_RE, code_text)]
-    if matches:
-        return matches[0].strip()  # take the first code snippet in the code answer
-    return ''
+
+    if not matches:
+        return ''
+
+    code = matches[0].strip()  # take the first code snippet in the code answer
+    code = re.sub(r'\t+', ' ', code)
+    code = re.sub(r'\n+', ' ', code)
+    code = re.sub(r' +', ' ', code)
+    return code
 
 
-def _clean_title(title):
-    return textacy.preprocess_text(title,
-                                   fix_unicode=True,
-                                   lowercase=True,
-                                   transliterate=True,
-                                   no_urls=True,
-                                   no_emails=True,
-                                   no_phone_numbers=True,
-                                   no_numbers=True,
-                                   no_currency_symbols=True,
-                                   no_punct=True,
-                                   no_contractions=False,
-                                   no_accents=True)
+def _clean_title(title: str):
+    title = title.lower()
+
+    title = re.sub(r'\t+', ' ', title)
+    title = re.sub(r'\n+', ' ', title)
+    title = re.sub(r'[^a-z0-9]', ' ', title)
+    title = re.sub(r' +', ' ', title)
+
+    return title
 
 
 def clean_data(input_file, output_file):

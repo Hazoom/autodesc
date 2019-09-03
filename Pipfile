@@ -12,10 +12,9 @@ pycodestyle = "*"
 pandas = "*"
 scikit-learn = "*"
 matplotlib = "*"
-tensorflow = "*"
 keras = "*"
+tensorflow = "==1.12.3"
 nmslib = "*"
-textacy = "*"
 dill = "*"
 
 [requires]

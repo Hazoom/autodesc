@@ -104,7 +104,8 @@ def build_model(word_emb_dim,
     encoder_bn = BatchNormalization(name='Encoder-Batchnorm-1')(encoder_embeddings)
 
     # We do not need the `encoder_output` just the hidden state.
-    _, encoder_state = GRU(hidden_state_dim, return_state=True, name='Encoder-Last-GRU', dropout=.5)(encoder_bn)
+    encoder_out, encoder_state = GRU(hidden_state_dim, return_sequences=True, return_state=True,
+                                     name='Encoder-Last-GRU', dropout=.5)(encoder_bn)
 
     # Encapsulate the encoder as a separate entity so we can just encode without decoding if we want to
     encoder_model = Model(inputs=encoder_inputs, outputs=encoder_state, name='Encoder-Model')
@@ -123,11 +124,11 @@ def build_model(word_emb_dim,
     decoder_gru_output, _ = decoder_gru(dec_bn, initial_state=seq2seq_encoder_out)
     decoder_bn = BatchNormalization(name='Decoder-Batchnorm-2')(decoder_gru_output)
 
-    # add attention layer
+    # # add attention layer
     # attn_layer = AttentionLayer(name='attention_layer')
-    # attn_out, attn_states = attn_layer([seq2seq_encoder_out, decoder_gru_output])
-
-    # concatenate the attn_out and decoder_out as an input to the softmax layer
+    # attn_out, attn_states = attn_layer([encoder_out, decoder_gru_output])
+    #
+    # # concatenate the attn_out and decoder_out as an input to the softmax layer
     # decoder_concat_input = Concatenate(axis=-1, name='concat_layer')([decoder_gru_output, attn_out])
 
     # Define TimeDistributed Softmax layer and provide decoder_concat_input as the input
