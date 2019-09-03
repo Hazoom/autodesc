@@ -86,7 +86,7 @@ def train(train_code_vectors_file: str,
     model.fit([encoder_vectors, decoder_input_vectors], np.expand_dims(decoder_target_vectors, -1),
               batch_size=batch_size,
               epochs=epochs,
-              validation_split=0.12,
+              validation_split=0.07,
               callbacks=[csv_logger, model_checkpoint])
 
     return model
