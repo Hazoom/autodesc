@@ -13,15 +13,20 @@ def _extract_code(code_text):
         return ''
 
     code = matches[0].strip()  # take the first code snippet in the code answer
+    code = clean_code(code)
+    return code
+
+
+def clean_code(code):
+    code = code.lower()
     code = re.sub(r'\t+', ' ', code)
     code = re.sub(r'\n+', ' ', code)
     code = re.sub(r' +', ' ', code)
     return code
 
 
-def _clean_title(title: str):
+def clean_title(title: str):
     title = title.lower()
-
     title = re.sub(r'\t+', ' ', title)
     title = re.sub(r'\n+', ' ', title)
     title = re.sub(r'[^a-z0-9]', ' ', title)
@@ -33,7 +38,7 @@ def _clean_title(title: str):
 def clean_data(input_file, output_file):
     code_df = pd.read_csv(input_file)
     code_df['answer_code'] = code_df['answer_body'].apply(_extract_code)
-    code_df['title'] = code_df['title'].apply(_clean_title)
+    code_df['title'] = code_df['title'].apply(clean_title)
 
     # filter relevant columns
     code_df = code_df.filter(['title', 'answer_code'], axis=1)

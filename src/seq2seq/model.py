@@ -72,8 +72,7 @@ def train(train_code_vectors_file: str,
     model.summary()
 
     model.compile(optimizer=optimizers.Nadam(lr=0.00005),
-                  loss='sparse_categorical_crossentropy',
-                  metrics=['sparse_categorical_crossentropy'])
+                  loss='sparse_categorical_crossentropy')
 
     csv_logger = CSVLogger('model.log')
 
@@ -107,7 +106,7 @@ def build_model(word_emb_dim,
 
     # We do not need the `encoder_output` just the hidden state.
     encoder_out, encoder_state = GRU(hidden_state_dim, return_sequences=True, return_state=True,
-                                     name='Encoder-Last-GRU', dropout=.5)(encoder_bn)
+                                     name='Encoder-Last-GRU', dropout=.5, recurrent_dropout=.4)(encoder_bn)
 
     # Encapsulate the encoder as a separate entity so we can just encode without decoding if we want to
     encoder_model = Model(inputs=encoder_inputs, outputs=encoder_state, name='Encoder-Model')
@@ -122,7 +121,8 @@ def build_model(word_emb_dim,
     dec_bn = BatchNormalization(name='Decoder-Batchnorm-1')(dec_emb)
 
     # Set up the decoder, using `decoder_state_input` as initial state.
-    decoder_gru = GRU(hidden_state_dim, return_state=True, return_sequences=True, name='Decoder-GRU', dropout=.5)
+    decoder_gru = GRU(hidden_state_dim, return_state=True, return_sequences=True, name='Decoder-GRU',
+                      dropout=.5, recurrent_dropout=.4)
     decoder_gru_output, _ = decoder_gru(dec_bn, initial_state=seq2seq_encoder_out)
     decoder_bn = BatchNormalization(name='Decoder-Batchnorm-2')(decoder_gru_output)
 
@@ -147,9 +147,16 @@ def train_seq2seq(code_vectors_file: str,
                   title_vectors_file: str,
                   title_pre_processor_file: str,
                   output_dir: str):
+
+    if not os.path.exists(output_dir):
+        os.mkdir(output_dir)
+
     model = train(code_vectors_file, code_pre_processor_file,
                   title_vectors_file, title_pre_processor_file,
                   output_dir)
+
+    # save model
+    model.save(os.path.join(output_dir, 'code_title_seq2seq_model.h5'))
 
 
 def main():
