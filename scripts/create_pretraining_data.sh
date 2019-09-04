@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python src/bertcode/bert/create_pretraining_data.py --input_file=data/cleaned_titles.txt --output_file=data/cleaned_titles_tf_examples.tfrecord --vocab_file=bert/models/uncased_L-12_H-768_A-12/vocab.txt --do_lower_case=True --max_seq_length=64 --max_predictions_per_seq=10 --masked_lm_prob=0.15 --random_seed=42 --dupe_factor=5
