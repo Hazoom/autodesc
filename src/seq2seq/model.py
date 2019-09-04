@@ -141,8 +141,7 @@ def build_model(word_emb_dim: int,
 
     # Define TimeDistributed softmax layer
     decoder_dense = Dense(n_decoder_tokens, activation='softmax', name='Final-Output-Dense')
-    dense_time = TimeDistributed(decoder_dense, name='time_distributed_layer')
-    decoder_outputs = dense_time(decoder_bn)
+    decoder_outputs = decoder_dense(decoder_bn)
 
     seq2seq_model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
 
@@ -184,7 +183,7 @@ def extract_decoder_model(model):
 
     # Reconstruct the input into the decoder
     decoder_inputs = model.get_layer('Decoder-Input').input
-    dec_emb = model.get_layer('Decoder-Word-Embedding')(decoder_inputs)
+    dec_emb = model.get_layer('Title-Embedding')(decoder_inputs)
     dec_bn = model.get_layer('Decoder-Batchnorm-1')(dec_emb)
 
     # Instead of setting the initial state from the encoder and forgetting about it, during inference
@@ -203,8 +202,7 @@ def extract_decoder_model(model):
     # Reconstruct dense layers
     dec_bn2 = model.get_layer('Decoder-Batchnorm-2')(gru_out)
     decoder_dense = model.get_layer('Final-Output-Dense')(dec_bn2)
-    dense_time = model.get_layer('time_distributed_layer')(decoder_dense)
-    decoder_outputs = dense_time(dec_bn2)
+    decoder_outputs = decoder_dense(dec_bn2)
 
     decoder_model = Model([decoder_inputs, gru_inference_state_input],
                           [decoder_outputs, gru_state_out])
