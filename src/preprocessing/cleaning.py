@@ -35,7 +35,9 @@ def clean_title(title: str):
     return title
 
 
-def clean_data(input_file, output_file):
+def clean_data(input_file: str,
+               output_file: str,
+               bert_titles_file: str):
     code_df = pd.read_csv(input_file)
     code_df['answer_code'] = code_df['answer_body'].apply(_extract_code)
     code_df['title'] = code_df['title'].apply(clean_title)
@@ -44,14 +46,20 @@ def clean_data(input_file, output_file):
     code_df = code_df.filter(['title', 'answer_code'], axis=1)
     code_df.to_csv(output_file)
 
+    with open(bert_titles_file, 'w+') as out_fp:
+        lines = code_df['title'].to_list()
+        for line in lines:
+            out_fp.write(line + '\n')
+
 
 def main():
     argument_parser = argparse.ArgumentParser()
     argument_parser.add_argument("--input-file", type=str, help='Input CSV file', required=True)
     argument_parser.add_argument("--output-file", type=str, help='Output CSV files', required=True)
+    argument_parser.add_argument("--bert-titles-file", type=str, help='Output titles txt', required=True)
     argcomplete.autocomplete(argument_parser)
     args = argument_parser.parse_args()
-    clean_data(args.input_file, args.output_file)
+    clean_data(args.input_file, args.output_file, args.bert_titles_file)
 
 
 if __name__ == '__main__':

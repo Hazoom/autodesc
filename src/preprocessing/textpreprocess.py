@@ -10,7 +10,7 @@ from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer, text_to_word_sequence
 
 from preprocessing import cleaning
-from bert.tokenization import FullTokenizer
+from bertcode.tokenization import FullTokenizer
 
 
 def load_text_preprocessor(file_path):
