@@ -56,6 +56,7 @@ def train(train_code_vectors_file: str,
           train_title_preprocessor_file: str,
           output_dir: str,
           epochs: int,
+          batch_size: int,
           word_embedding_dim: int = 300,
           hidden_state_dim: int = 768):
     # Load vectors and title/code pre processors
@@ -81,7 +82,6 @@ def train(train_code_vectors_file: str,
         os.path.join(output_dir, 'model.epoch{{epoch:02d}}-val{{val_loss:.5f}}.hdf5'),
         save_best_only=True)
 
-    batch_size = 32
     model.fit([encoder_vectors, decoder_input_vectors], np.expand_dims(decoder_target_vectors, -1),
               batch_size=batch_size,
               epochs=epochs,
@@ -147,14 +147,15 @@ def train_seq2seq(code_vectors_file: str,
                   title_vectors_file: str,
                   title_pre_processor_file: str,
                   output_dir: str,
-                  epochs: int):
+                  epochs: int,
+                  batch_size: int):
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
     model = train(code_vectors_file, code_pre_processor_file,
                   title_vectors_file, title_pre_processor_file,
-                  output_dir, epochs)
+                  output_dir, epochs, batch_size)
 
     # save model
     model.save(os.path.join(output_dir, 'code_title_seq2seq_model.h5'))
@@ -171,11 +172,13 @@ def main():
     argument_parser.add_argument("--output-dir", type=str, help='Output directory for model', required=True)
     argument_parser.add_argument("--epochs", type=int, help='Number of epochs. Default: 16', required=False,
                                  default=16)
+    argument_parser.add_argument("--batch-size", type=int, help='Batch size. Default: 32', required=False,
+                                 default=32)
     argcomplete.autocomplete(argument_parser)
     args = argument_parser.parse_args()
     train_seq2seq(args.code_vectors_file, args.code_preprocessor_file,
                   args.title_vectors_file, args.title_preprocessor_file,
-                  args.output_dir, args.epochs)
+                  args.output_dir, args.epochs, args.batch_size)
 
 
 if __name__ == '__main__':
