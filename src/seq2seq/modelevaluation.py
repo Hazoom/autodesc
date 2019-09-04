@@ -5,7 +5,7 @@ import pandas as pd
 from typing import List
 from nltk.translate.bleu_score import corpus_bleu
 
-from seq2seq.model import build_model, load_encoder_inputs, extract_encoder_model, extract_decoder_model
+from seq2seq.model import build_model, extract_encoder_model, extract_decoder_model
 from preprocessing import textpreprocess
 
 
@@ -25,8 +25,7 @@ def load_model(encoder_seq_len: int,
     return seq2seq_model
 
 
-def evaluate_seq2seq(test_code_vectors_file: str,
-                     code_preprocessor_file: str,
+def evaluate_seq2seq(code_preprocessor_file: str,
                      title_preprocessor_file: str,
                      test_file: str,
                      model_weights_path: str):
@@ -162,8 +161,6 @@ class Seq2SeqInference(object):
 
 def main():
     argument_parser = argparse.ArgumentParser()
-    argument_parser.add_argument("--test-code-vectors-file", type=str, help='Test code vectors file path',
-                                 required=True)
     argument_parser.add_argument("--code-preprocessor-file", type=str,
                                  help='Train code pre processor file path', required=True)
     argument_parser.add_argument("--title-preprocessor-file", type=str,
@@ -174,7 +171,7 @@ def main():
                                  help='Model weights file path', required=True)
     argcomplete.autocomplete(argument_parser)
     args = argument_parser.parse_args()
-    evaluate_seq2seq(args.test_code_vectors_file, args.code_preprocessor_file,
+    evaluate_seq2seq(args.code_preprocessor_file,
                      args.title_preprocessor_file, args.test_file,
                      args.model_weights_file)
 

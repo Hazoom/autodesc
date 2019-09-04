@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python src/seq2seq/modelevaluation.py --code-preprocessor-file data/vectors/code_pre_processor.dpkl --title-preprocessor-file data/vectors/title_pre_processor.dpkl --test-file data/processed/test.csv --model-weights-file data/models/model_weights_best.hdf5
