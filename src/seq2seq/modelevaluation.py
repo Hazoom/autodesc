@@ -48,8 +48,8 @@ def evaluate_seq2seq(code_preprocessor_file: str,
 
     # load test set
     test_df = pd.read_csv(test_file)
-    test_codes = test_df['answer_code'].to_list()
-    test_titles = test_df['title'].to_list()
+    test_codes = test_df['answer_code'].astype(str).to_list()
+    test_titles = test_df['title'].astype(str).to_list()
 
     # show random predictions
     seq2seq_inference.demo_model_predictions(n_samples=15, input_texts=test_codes, output_text=test_titles)
