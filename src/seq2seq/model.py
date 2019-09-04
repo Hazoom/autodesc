@@ -63,6 +63,7 @@ def train(train_code_vectors_file: str,
           epochs: int,
           batch_size: int,
           validation_split: float,
+          learning_rate: float,
           word_embedding_dim: int = 300,
           hidden_state_dim: int = 768):
     # Load vectors and title/code pre processors
@@ -75,7 +76,8 @@ def train(train_code_vectors_file: str,
                         hidden_state_dim,
                         encoder_vectors.shape[1],
                         n_encoder_tokens,
-                        n_decoder_tokens)
+                        n_decoder_tokens,
+                        learning_rate=learning_rate)
 
     model.summary()
 
@@ -98,7 +100,8 @@ def build_model(word_emb_dim: int,
                 hidden_state_dim: int,
                 encoder_seq_len: int,
                 n_encoder_tokens: int,
-                n_decoder_tokens: int):
+                n_decoder_tokens: int,
+                learning_rate: float = 0.00005):
     # Encoder Model
     encoder_inputs = Input(shape=(encoder_seq_len,), name='Encoder-Input')
 
@@ -143,7 +146,7 @@ def build_model(word_emb_dim: int,
 
     seq2seq_model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
 
-    seq2seq_model.compile(optimizer=optimizers.Nadam(lr=0.00005),
+    seq2seq_model.compile(optimizer=optimizers.Nadam(lr=learning_rate),
                           loss='sparse_categorical_crossentropy')
 
     return seq2seq_model
@@ -156,14 +159,15 @@ def train_seq2seq(code_vectors_file: str,
                   output_dir: str,
                   epochs: int,
                   batch_size: int,
-                  validation_split: float):
+                  validation_split: float,
+                  learning_rate: float):
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
     model = train(code_vectors_file, code_pre_processor_file,
                   title_vectors_file, title_pre_processor_file,
                   output_dir,
-                  epochs, batch_size, validation_split)
+                  epochs, batch_size, validation_split, learning_rate)
 
     # save model
     model.save(os.path.join(output_dir, 'code_title_seq2seq_model.h5'))
@@ -184,12 +188,14 @@ def main():
                                  default=32)
     argument_parser.add_argument("--validation-split", type=float, help='Validation size. Default: 0.1', required=False,
                                  default=0.1)
+    argument_parser.add_argument("--learning-rate", type=float, help='Learning rate. Default: 0.00005',
+                                 required=False, default=0.00005)
     argcomplete.autocomplete(argument_parser)
     args = argument_parser.parse_args()
     train_seq2seq(args.code_vectors_file, args.code_preprocessor_file,
                   args.title_vectors_file, args.title_preprocessor_file,
                   args.output_dir,
-                  args.epochs, args.batch_size, args.validation_split)
+                  args.epochs, args.batch_size, args.validation_split, args.learning_rate)
 
 
 if __name__ == '__main__':

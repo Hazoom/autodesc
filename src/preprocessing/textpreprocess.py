@@ -207,44 +207,63 @@ def _save_vectors(train_title_vectors, output_dir: str, file_name: str):
     np.save(os.path.join(output_dir, file_name), train_title_vectors)
 
 
-def parse_data(input_file, output_dir):
-    train_df = pd.read_csv(input_file)
+def parse_data(train_input_file: str,
+               test_input_file: str,
+               output_dir: str):
+    train_df = pd.read_csv(train_input_file)
     title_pre_processor = TextPreprocessor(mode='title', append_borders=True, n_vocab=10000, max_length=64,
                                            truncating='post', padding='post')
 
-    print('Fitting pre-processor on titles... (1/2)')
+    print('Fitting pre-processor on train titles... (1/2)')
     train_title_vectors = title_pre_processor.fit_transform(train_df['title'].tolist())
-    print('Finished fitting pre-processor on titles (1/2)')
+    print('Finished fitting pre-processor on train titles (1/2)')
 
     code_pre_processor = TextPreprocessor(mode='code', append_borders=False, n_vocab=20000, max_length=30)
 
-    print('Fitting pre-processor on codes... (2/2)')
+    print('Fitting pre-processor on train codes... (2/2)')
     train_code_vectors = code_pre_processor.fit_transform(train_df['answer_code'].astype(str).tolist())
-    print('Finished fitting pre-processor on codes (2/2)')
+    print('Finished fitting pre-processor on train codes (2/2)')
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
-    print('Saving pre processors and vectors...')
+    print('Saving training pre processors and vectors...')
 
     # save the pre processors for later use
     _save_pre_processor(title_pre_processor, output_dir, 'title_pre_processor.dpkl')
     _save_pre_processor(code_pre_processor, output_dir, 'code_pre_processor.dpkl')
 
-    # save the vectors of title and code
-    _save_vectors(train_title_vectors, output_dir, 'title_vectors.npy')
-    _save_vectors(train_code_vectors, output_dir, 'code_vectors.npy')
+    # save the training vectors of title and code
+    _save_vectors(train_title_vectors, output_dir, 'train_title_vectors.npy')
+    _save_vectors(train_code_vectors, output_dir, 'train_code_vectors.npy')
+
+    test_df = pd.read_csv(test_input_file)
+
+    print('Transforming test titles... (1/2)')
+    test_title_vectors = title_pre_processor.transform(test_df['title'].tolist())
+    print('Finished transforming test titles (1/2)')
+
+    print('Transforming test codes... (2/2)')
+    test_code_vectors = code_pre_processor.transform(test_df['answer_code'].astype(str).tolist())
+    print('Finished transforming test codes (2/2)')
+
+    # save the test vectors of title and code
+    _save_vectors(test_title_vectors, output_dir, 'test_title_vectors.npy')
+    _save_vectors(test_code_vectors, output_dir, 'test_code_vectors.npy')
 
     print('Done.')
 
 
 def main():
     argument_parser = argparse.ArgumentParser()
-    argument_parser.add_argument("--input-file", type=str, help='Input CSV file after cleaning', required=True)
+    argument_parser.add_argument("--train-input-file", type=str, help='Input training CSV file after cleaning',
+                                 required=True)
+    argument_parser.add_argument("--test-input-file", type=str, help='Input test CSV file after cleaning',
+                                 required=True)
     argument_parser.add_argument("--output-dir", type=str, help='Output directory', required=True)
     argcomplete.autocomplete(argument_parser)
     args = argument_parser.parse_args()
-    parse_data(args.input_file, args.output_dir)
+    parse_data(args.train_input_file, args.test_input_file, args.output_dir)
 
 
 if __name__ == '__main__':
