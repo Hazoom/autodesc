@@ -76,7 +76,7 @@ def train(train_code_vectors_file: str,
     model.compile(optimizer=optimizers.Nadam(lr=0.00005),
                   loss='sparse_categorical_crossentropy')
 
-    csv_logger = CSVLogger('model.log')
+    csv_logger = CSVLogger(os.path.join(output_dir, 'model.log'))
 
     model_checkpoint = ModelCheckpoint(
         os.path.join(output_dir, 'model_weights_best.hdf5'),
