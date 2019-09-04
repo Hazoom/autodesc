@@ -139,7 +139,7 @@ def build_model(word_emb_dim: int,
     # # concatenate the attn_out and decoder_out as an input to the softmax layer
     # decoder_concat_input = Concatenate(axis=-1, name='concat_layer')([decoder_gru_output, attn_out])
 
-    # Define TimeDistributed Softmax layer and provide decoder_concat_input as the input
+    # Define TimeDistributed softmax layer
     decoder_dense = Dense(n_decoder_tokens, activation='softmax', name='Final-Output-Dense')
     dense_time = TimeDistributed(decoder_dense, name='time_distributed_layer')
     decoder_outputs = dense_time(decoder_bn)
@@ -171,6 +171,44 @@ def train_seq2seq(code_vectors_file: str,
 
     # save model
     model.save(os.path.join(output_dir, 'code_title_seq2seq_model.h5'))
+
+
+def extract_encoder_model(model):
+    encoder_model = model.get_layer('Encoder-Model')
+    return encoder_model
+
+
+def extract_decoder_model(model):
+    # the latent dimension is the dimension of the hidden state passed from the encoder to the decoder.
+    latent_dim = model.get_layer('Encoder-Model').output_shape[-1]
+
+    # Reconstruct the input into the decoder
+    decoder_inputs = model.get_layer('Decoder-Input').input
+    dec_emb = model.get_layer('Decoder-Word-Embedding')(decoder_inputs)
+    dec_bn = model.get_layer('Decoder-Batchnorm-1')(dec_emb)
+
+    # Instead of setting the initial state from the encoder and forgetting about it, during inference
+    # we are not doing teacher forcing, so we will have to have a feedback loop from predictions back into
+    # the GRU, thus we define this input layer for the state so we can add this capability
+    gru_inference_state_input = Input(shape=(latent_dim,), name='hidden_state_input')
+
+    # we need to reuse the weights. That's why we are getting this
+    # If you inspect the decoder GRU that we created for training, it will take as input
+    # 2 tensors -> (1) is the embedding layer output for the teacher forcing
+    #                  (which will now be the last step's prediction, and will be <START> on the first time step)
+    #              (2) is the state, which we will initialize with the encoder on the first time step, but then
+    #                   grab the state after the first prediction and feed that back in again.
+    gru_out, gru_state_out = model.get_layer('Decoder-GRU')([dec_bn, gru_inference_state_input])
+
+    # Reconstruct dense layers
+    dec_bn2 = model.get_layer('Decoder-Batchnorm-2')(gru_out)
+    decoder_dense = model.get_layer('Final-Output-Dense')(dec_bn2)
+    dense_time = model.get_layer('time_distributed_layer')(decoder_dense)
+    decoder_outputs = dense_time(dec_bn2)
+
+    decoder_model = Model([decoder_inputs, gru_inference_state_input],
+                          [decoder_outputs, gru_state_out])
+    return decoder_model
 
 
 def main():

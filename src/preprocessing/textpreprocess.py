@@ -6,6 +6,7 @@ import argcomplete
 import dill
 import numpy as np
 import pandas as pd
+from typing import List
 from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer, text_to_word_sequence
 
@@ -61,12 +62,12 @@ class TextPreprocessor:
         self.mode = mode
 
     def process_texts(self,
-                      texts: str):
+                      texts: List[str]):
         if self.append_borders:
             return [[self.start_token] + self.tokenizer(self.cleaner(doc)) + [self.end_token] for doc in texts]
         return [self.tokenizer(self.cleaner(doc)) for doc in texts]
 
-    def transform(self, texts):
+    def transform(self, texts: List[str]):
         if self.token_to_id is None:
             raise Exception('Model is not fitted yet!')
 
@@ -93,11 +94,11 @@ class TextPreprocessor:
 
         return padded_sequences
 
-    def fit_transform(self, texts):
+    def fit_transform(self, texts: List[str]):
         tokenized_data = self.fit(texts)
         return self._transform_tokenized_texts(tokenized_data)
 
-    def fit(self, texts):
+    def fit(self, texts: List[str]):
         print(f'Tokenize {self.mode}...')
         tokenized_texts = self.process_texts(texts)
         assert len(tokenized_texts) == len(texts)

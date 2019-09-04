@@ -16,6 +16,7 @@ keras = "*"
 tensorflow = "==1.12.3"
 nmslib = "*"
 dill = "*"
+nltk = "*"
 
 [requires]
 python_version = "3.6"
