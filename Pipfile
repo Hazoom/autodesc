@@ -19,6 +19,7 @@ dill = "*"
 nltk = "*"
 pathos = "*"
 pypeln = "*"
+bert-serving-client = "*"
 
 [requires]
 python_version = "3.6"

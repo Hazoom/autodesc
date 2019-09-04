@@ -8,6 +8,7 @@ import argcomplete
 import numpy as np
 
 from bertcode.tokenization import FullTokenizer
+from scores.scoreutils import simple_normalization
 
 
 def pad_scores(sentence, max_len):
@@ -23,42 +24,6 @@ def pad_scores(sentence, max_len):
 def normalize(x):
     norm = np.sqrt(np.sum(x ** 2))
     return x / norm
-
-
-def simple_normalization(x_data, axis=None):
-    """
-    Compute the softmax of each element along an axis of X.
-
-    Parameters
-    ----------
-    x_data: ND-Array. Probably should be floats.
-    theta (optional): float parameter, used as a multiplier
-        prior to exponentiation. Default = 1.0
-    axis: int (optional): axis to compute values along. Default is the
-        first non-singleton axis.
-
-    Returns an array the same size as X. The result will sum to 1
-    along the specified axis.
-    """
-
-    # make X at least 2d
-    y = np.atleast_2d(x_data)
-
-    # find axis
-    if axis is None:
-        axis = next(j[0] for j in enumerate(y.shape) if j[1] > 1)
-
-    # take the sum along the specified axis
-    ax_sum = np.expand_dims(np.sum(y, axis=axis), axis)
-
-    # finally: divide elementwise
-    p = y / ax_sum
-
-    # flatten if X was 1D
-    if len(x_data.shape) == 1:
-        p = p.flatten()
-
-    return p
 
 
 def get_score_for_token(token, token_count, score_model):
