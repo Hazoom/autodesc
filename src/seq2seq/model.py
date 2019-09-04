@@ -79,7 +79,7 @@ def train(train_code_vectors_file: str,
     csv_logger = CSVLogger('model.log')
 
     model_checkpoint = ModelCheckpoint(
-        os.path.join(output_dir, 'model.epoch{{epoch:02d}}-val{{val_loss:.5f}}.hdf5'),
+        os.path.join(output_dir, 'model_weights_best.hdf5'),
         save_best_only=True)
 
     model.fit([encoder_vectors, decoder_input_vectors], np.expand_dims(decoder_target_vectors, -1),
