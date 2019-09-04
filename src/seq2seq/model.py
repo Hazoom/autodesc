@@ -34,13 +34,18 @@ from preprocessing import textpreprocess
 from seq2seq.layers.attention import AttentionLayer
 
 
-def _load_encoder_inputs(file_path):
+# fix random seed for reproducibility
+seed = 42
+np.random.seed(seed)
+
+
+def load_encoder_inputs(file_path: str):
     code_vectors = np.load(file_path)
     print(f'Shape of encoder vectors: {code_vectors.shape}')
     return code_vectors
 
 
-def _load_decoder_inputs(file_path):
+def load_decoder_inputs(file_path: str):
     title_vectors = np.load(file_path)
     decoder_input_vectors = title_vectors[:, :-1]
     decoder_target_vectors = title_vectors[:, 1:]
@@ -60,21 +65,18 @@ def train(train_code_vectors_file: str,
           word_embedding_dim: int = 300,
           hidden_state_dim: int = 768):
     # Load vectors and title/code pre processors
-    decoder_input_vectors, decoder_target_vectors = _load_decoder_inputs(train_code_vectors_file)
-    encoder_vectors = _load_encoder_inputs(train_title_vectors_file)
+    decoder_input_vectors, decoder_target_vectors = load_decoder_inputs(train_title_vectors_file)
+    encoder_vectors = load_encoder_inputs(train_code_vectors_file)
     title_pre_processor, n_decoder_tokens = textpreprocess.load_text_preprocessor(train_title_preprocessor_file)
     code_pre_processor, n_encoder_tokens = textpreprocess.load_text_preprocessor(train_code_preprocessor_file)
 
     model = build_model(word_embedding_dim,
                         hidden_state_dim,
                         encoder_vectors.shape[1],
-                        n_decoder_tokens,
-                        n_encoder_tokens)
+                        n_encoder_tokens,
+                        n_decoder_tokens)
 
     model.summary()
-
-    model.compile(optimizer=optimizers.Nadam(lr=0.00005),
-                  loss='sparse_categorical_crossentropy')
 
     csv_logger = CSVLogger(os.path.join(output_dir, 'model.log'))
 
@@ -91,11 +93,11 @@ def train(train_code_vectors_file: str,
     return model
 
 
-def build_model(word_emb_dim,
-                hidden_state_dim,
-                encoder_seq_len,
-                n_encoder_tokens,
-                n_decoder_tokens):
+def build_model(word_emb_dim: int,
+                hidden_state_dim: int,
+                encoder_seq_len: int,
+                n_encoder_tokens: int,
+                n_decoder_tokens: int):
     # Encoder Model
     encoder_inputs = Input(shape=(encoder_seq_len,), name='Encoder-Input')
 
@@ -139,6 +141,10 @@ def build_model(word_emb_dim,
     decoder_outputs = dense_time(decoder_bn)
 
     seq2seq_model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
+
+    seq2seq_model.compile(optimizer=optimizers.Nadam(lr=0.00005),
+                          loss='sparse_categorical_crossentropy')
+
     return seq2seq_model
 
 
@@ -149,7 +155,6 @@ def train_seq2seq(code_vectors_file: str,
                   output_dir: str,
                   epochs: int,
                   batch_size: int):
-
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
