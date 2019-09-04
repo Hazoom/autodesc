@@ -3,6 +3,9 @@ import argcomplete
 import numpy as np
 import pandas as pd
 from typing import List
+from keras.preprocessing.sequence import pad_sequences
+from pathos.multiprocessing import cpu_count
+from pypeln import thread as th
 from nltk.translate.bleu_score import corpus_bleu
 
 from seq2seq.model import build_model, extract_encoder_model, extract_decoder_model
@@ -142,21 +145,48 @@ class Seq2SeqInference(object):
                        code_strings: List[str],
                        title_strings: List[str],
                        max_len: int):
-        actual, predicted = list(), list()
         assert len(code_strings) == len(title_strings)
         num_examples = len(code_strings)
 
-        print('Generating predictions.')
+        print('\nGenerating predictions.')
         # step over the whole set
 
-        for i in range(num_examples):
-            _, y_hat = self.predict(raw_input_text=code_strings[i], max_len=max_len)
-            actual.append(self.dec_pp.process_texts([title_strings[i]])[0])
-            predicted.append(self.dec_pp.process_texts([y_hat])[0])
+        total_length_str = str(num_examples)
+        cpu_cores = cpu_count()
+        results = []
+        (range(num_examples)
+         | th.each(lambda index: self._get_prediction_and_actual(code_strings,
+                                                                 index,
+                                                                 max_len,
+                                                                 title_strings,
+                                                                 total_length_str,
+                                                                 results),
+                   workers=cpu_cores, maxsize=0)
+         | list)
+        print(f'Finished {total_length_str} out of {total_length_str}')
+        results = sorted(results, key=lambda x: x[0])
+        actual = [result[1] for result in results]
+        predicted = [result[2] for result in results]
 
         print('Calculating BLEU...')
         bleu_score = corpus_bleu([[actual_item] for actual_item in actual], predicted)
         return bleu_score
+
+    def _get_prediction_and_actual(self,
+                                   code_strings,
+                                   index,
+                                   max_len,
+                                   title_strings,
+                                   total_length_str,
+                                   results):
+        _, y_hat = self.predict(raw_input_text=code_strings[index], max_len=max_len)
+        actual_value = self.dec_pp.process_texts([title_strings[index]])[0]
+        predicted_value = self.dec_pp.process_texts([y_hat])[0]
+
+        if index % 100 == 0 and index > 0:
+            print('Finished {} out of {}'.format(str(index), total_length_str))
+
+        results.append((index, actual_value, predicted_value))
 
 
 def main():

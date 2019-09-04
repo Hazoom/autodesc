@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python src/seq2seq/model.py --code-vectors-file data/vectors/code_vectors.npy --code-preprocessor-file data/vectors/code_pre_processor.dpkl --title-vectors-file data/vectors/title_vectors.npy --title-preprocessor-file data/vectors/title_pre_processor.dpkl --output-dir data/models --epochs 20 --batch-size 256 --validation-split 0.1
+python src/seq2seq/model.py --code-vectors-file data/vectors/train_code_vectors.npy --code-preprocessor-file data/vectors/code_pre_processor.dpkl --title-vectors-file data/vectors/train_title_vectors.npy --title-preprocessor-file data/vectors/title_pre_processor.dpkl --output-dir data/models --epochs 16 --batch-size 256 --validation-split 0.1

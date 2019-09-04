@@ -73,24 +73,14 @@ class TextPreprocessor:
 
         tokenized_data = self.process_texts(texts)
 
-        print(f'Transforming {self.mode}...')
         indexed_data = self.indexer.tokenized_texts_to_sequences(tokenized_data)
-        print(f'Done transforming {self.mode}')
-
-        print(f'Padding {self.mode}...')
         padded_sequences = self._pad_sequences(indexed_data)
-        print(f'Done padding {self.mode}')
 
         return padded_sequences
 
     def _transform_tokenized_texts(self, tokenized_data):
-        print(f'Transforming {self.mode}...')
         indexed_data = self.indexer.tokenized_texts_to_sequences(tokenized_data)
-        print(f'Done transforming {self.mode}')
-
-        print(f'Padding {self.mode}...')
         padded_sequences = self._pad_sequences(indexed_data)
-        print(f'Done padding {self.mode}')
 
         return padded_sequences
 

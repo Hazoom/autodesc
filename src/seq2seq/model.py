@@ -201,8 +201,7 @@ def extract_decoder_model(model):
 
     # Reconstruct dense layers
     dec_bn2 = model.get_layer('Decoder-Batchnorm-2')(gru_out)
-    decoder_dense = model.get_layer('Final-Output-Dense')(dec_bn2)
-    decoder_outputs = decoder_dense(dec_bn2)
+    decoder_outputs = model.get_layer('Final-Output-Dense')(dec_bn2)
 
     decoder_model = Model([decoder_inputs, gru_inference_state_input],
                           [decoder_outputs, gru_state_out])

@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "45a7821f40e985dbb112ba85a9874d666fc20fb07432fc5dbd42c73e7883e89b"
+            "sha256": "e248f15c84f047545d99367d6c9cc3b205819f576b87f80cb143011bfcef90c2"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -263,6 +263,20 @@
             "index": "pypi",
             "version": "==7.2.0"
         },
+        "multiprocess": {
+            "hashes": [
+                "sha256:1b7084eac782f50eb21da2ea571e062bbf504851212cdb4c7ad1cad7bed036c6",
+                "sha256:20c3715959d45a902ae425ea5b275288093588da5826d281846912f520818712",
+                "sha256:3ac3bad735f67407678ed2b6b682ed115b9983165f4c7cd5929afba9f1f6fe6c",
+                "sha256:649d69115b5e93b4a5c77dee6a861a28c74105cc1d8a420da308afa99914b4ee",
+                "sha256:64b415e0cb746bc9e9620b92a300b2d37f111ff1780ba953c899bf56cea16ce8",
+                "sha256:786bd6684c8d339a56bf8f32fb846da4ccb5924f7c2679c946d64d2684e552f7",
+                "sha256:8f69e705f7aabfbb8dc17252daca34331f0ce5c1b91bae0ddd0f3ee03f90a580",
+                "sha256:b2026f00a358a3ac00f41c83d5d7f05ae15cd4b1e061fc00f672abd98cf322ae",
+                "sha256:fc6b2d8f33e7d437a82c6d1c2f1673ae20a271152a1ac6a18571d10308de027d"
+            ],
+            "version": "==0.70.8"
+        },
         "nltk": {
             "hashes": [
                 "sha256:bed45551259aa2101381bbdd5df37d44ca2669c5c3dad72439fa459b29137d94"
@@ -319,6 +333,13 @@
             "index": "pypi",
             "version": "==0.25.1"
         },
+        "pathos": {
+            "hashes": [
+                "sha256:610dc244b6b5c240396ae392bb6f94d7e990b0062d4032c5e9ab00b594ed8720"
+            ],
+            "index": "pypi",
+            "version": "==0.2.4"
+        },
         "pep8": {
             "hashes": [
                 "sha256:b22cfae5db09833bb9bd7c8463b53e1a9c9b39f12e304a8d0bba729c501827ee",
@@ -326,6 +347,18 @@
             ],
             "index": "pypi",
             "version": "==1.7.1"
+        },
+        "pox": {
+            "hashes": [
+                "sha256:47cb160322922c54590be447f08aa43f04875a3e53eee89963a757ebb5eb1376"
+            ],
+            "version": "==0.2.6"
+        },
+        "ppft": {
+            "hashes": [
+                "sha256:9e2173042edd5cc9c7bee0d7731873f17fcdce0e42e4b7ab68857d0de7b631fc"
+            ],
+            "version": "==1.6.6.1"
         },
         "protobuf": {
             "hashes": [
@@ -377,6 +410,13 @@
                 "sha256:d9338df12903bbf5d65a0e4e87c2161968b10d2e489652bb47001d82a9b028b4"
             ],
             "version": "==2.4.2"
+        },
+        "pypeln": {
+            "hashes": [
+                "sha256:34ad1a50052c66849ddd57e6bc4d2da257360ff61830efa7592341da2303e83a"
+            ],
+            "index": "pypi",
+            "version": "==0.1.9"
         },
         "python-dateutil": {
             "hashes": [

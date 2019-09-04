@@ -17,6 +17,8 @@ tensorflow = "==1.12.3"
 nmslib = "*"
 dill = "*"
 nltk = "*"
+pathos = "*"
+pypeln = "*"
 
 [requires]
 python_version = "3.6"
