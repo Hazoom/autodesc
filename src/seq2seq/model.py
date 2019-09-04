@@ -62,6 +62,7 @@ def train(train_code_vectors_file: str,
           output_dir: str,
           epochs: int,
           batch_size: int,
+          validation_split: float,
           word_embedding_dim: int = 300,
           hidden_state_dim: int = 768):
     # Load vectors and title/code pre processors
@@ -87,7 +88,7 @@ def train(train_code_vectors_file: str,
     model.fit([encoder_vectors, decoder_input_vectors], np.expand_dims(decoder_target_vectors, -1),
               batch_size=batch_size,
               epochs=epochs,
-              validation_split=0.07,
+              validation_split=validation_split,
               callbacks=[csv_logger, model_checkpoint])
 
     return model
@@ -154,13 +155,15 @@ def train_seq2seq(code_vectors_file: str,
                   title_pre_processor_file: str,
                   output_dir: str,
                   epochs: int,
-                  batch_size: int):
+                  batch_size: int,
+                  validation_split: float):
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
     model = train(code_vectors_file, code_pre_processor_file,
                   title_vectors_file, title_pre_processor_file,
-                  output_dir, epochs, batch_size)
+                  output_dir,
+                  epochs, batch_size, validation_split)
 
     # save model
     model.save(os.path.join(output_dir, 'code_title_seq2seq_model.h5'))
@@ -179,11 +182,14 @@ def main():
                                  default=16)
     argument_parser.add_argument("--batch-size", type=int, help='Batch size. Default: 32', required=False,
                                  default=32)
+    argument_parser.add_argument("--validation-split", type=float, help='Validation size. Default: 0.1', required=False,
+                                 default=0.1)
     argcomplete.autocomplete(argument_parser)
     args = argument_parser.parse_args()
     train_seq2seq(args.code_vectors_file, args.code_preprocessor_file,
                   args.title_vectors_file, args.title_preprocessor_file,
-                  args.output_dir, args.epochs, args.batch_size)
+                  args.output_dir,
+                  args.epochs, args.batch_size, args.validation_split)
 
 
 if __name__ == '__main__':
