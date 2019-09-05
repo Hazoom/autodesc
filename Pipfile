@@ -20,6 +20,7 @@ nltk = "*"
 pathos = "*"
 pypeln = "*"
 bert-serving-client = "*"
+jupyter = "*"
 
 [requires]
 python_version = "3.6"

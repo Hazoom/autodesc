@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python src/bertcode/traintitlesearch.py --titles-bert-vectors-file data/bert_vectors/titles_bert_train_vectors.pkl --train-file data/processed/train.csv --output-dir data/bert_vectors

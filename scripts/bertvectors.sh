@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python src/bertcode/bertvectors.py --titles-file data/processed/train.csv --output-file data/bert_vectors/titles_bert_train_vectors.pkl --score-model data/score_model/score_model.pkl
