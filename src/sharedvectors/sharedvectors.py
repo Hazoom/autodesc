@@ -10,7 +10,10 @@ from seq2seq.model import load_encoder_inputs
 
 
 def load_shared_vector_space_model(shared_vector_model_path: str):
-    return load_model(shared_vector_model_path)
+    print(f'Loading model {shared_vector_model_path}')
+    model = load_model(shared_vector_model_path)
+    print(f'Finished loading model {shared_vector_model_path}')
+    return model
 
 
 def create_shared_vectors(train_code_vectors_file: str,

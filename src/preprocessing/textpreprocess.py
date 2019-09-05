@@ -6,28 +6,12 @@ import argcomplete
 import dill
 import numpy as np
 import pandas as pd
-from typing import List
+from typing import List, Tuple
 from keras.preprocessing.sequence import pad_sequences
 from keras.preprocessing.text import Tokenizer, text_to_word_sequence
 
 from preprocessing import cleaning
 from bertcode.tokenization import FullTokenizer
-
-
-def load_text_preprocessor(file_path):
-    """
-    Load TextPreprocessor dpickle file from disk.
-    :param file_path: str
-        File path on disk
-    :return:
-    text_pre_processor: TextPreprocessor
-    n_tokens: int
-    """
-    with open(file_path, 'rb') as in_fp:
-        text_pre_processor = dill.load(in_fp)
-    n_tokens = text_pre_processor.n_tokens + 1  # + 1 because of padding token
-    print(f'Loaded model: {file_path}. Number of tokens: {n_tokens}')
-    return text_pre_processor, n_tokens
 
 
 class TextPreprocessor:
@@ -187,6 +171,22 @@ class CustomIndexer(Tokenizer):
                 i = self.word_index.get(w, 1)
                 vector.append(i)
             yield vector
+
+
+def load_text_preprocessor(file_path: str) -> Tuple[TextPreprocessor, int]:
+    """
+    Load TextPreprocessor dpickle file from disk.
+    :param file_path: str
+        File path on disk
+    :return:
+    text_pre_processor: TextPreprocessor
+    n_tokens: int
+    """
+    with open(file_path, 'rb') as in_fp:
+        text_pre_processor = dill.load(in_fp)
+    n_tokens = text_pre_processor.n_tokens + 1  # + 1 because of padding token
+    print(f'Loaded model: {file_path}. Number of tokens: {n_tokens}')
+    return text_pre_processor, n_tokens
 
 
 def _save_pre_processor(pre_processor: TextPreprocessor, output_dir: str, file_name: str):

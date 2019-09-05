@@ -21,6 +21,8 @@ pathos = "*"
 pypeln = "*"
 bert-serving-client = "*"
 jupyter = "*"
+flask = "*"
+flask-restplus = "*"
 
 [requires]
 python_version = "3.6"
