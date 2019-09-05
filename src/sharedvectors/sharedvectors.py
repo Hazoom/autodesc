@@ -7,6 +7,7 @@ from keras.models import load_model
 
 from preprocessing import textpreprocess
 from seq2seq.model import load_encoder_inputs
+from bertcode.traintitlesearch import create_nmslib_search_index
 
 
 def load_shared_vector_space_model(shared_vector_model_path: str):
@@ -36,6 +37,11 @@ def create_shared_vectors(train_code_vectors_file: str,
     results = {index: vector for index, vector in enumerate(titles_vectors)}
     with open(os.path.join(output_dir, 'predicted_titles.pkl'), 'wb') as out_fp:
         pickle.dump(results, out_fp)
+
+    print('Building nmslib index on predicted titles')
+    search_index = create_nmslib_search_index(titles_vectors)
+    search_index.saveIndex(os.path.join(output_dir, 'dim768_predicted_titles_index.nmslib'))
+    print('Finished building nmslib index on predicted titles')
 
 
 def main():

@@ -9,7 +9,7 @@ import nmslib
 from bertcode import bertvectors
 
 
-def _create_nmslib_search_index(numpy_vectors):
+def create_nmslib_search_index(numpy_vectors):
     search_index = nmslib.init(method='hnsw', space='cosinesimil')
     search_index.addDataPointBatch(numpy_vectors)
     search_index.createIndex({'post': 2}, print_progress=True)
@@ -23,7 +23,7 @@ def train_search_engine(titles_bert_vectors_file: str,
     train_df = pd.read_csv(train_file)
     index_to_id = {i: index for i, index in enumerate(train_df['index'].to_list())}
     vectors = np.array([value for _, value in vectors_map.items()])
-    dim768_tfidf_search_index = _create_nmslib_search_index(vectors)
+    dim768_tfidf_search_index = create_nmslib_search_index(vectors)
 
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
