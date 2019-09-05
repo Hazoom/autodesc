@@ -73,7 +73,7 @@ class ClustersSearchAPI(Resource):
 def _get_id_to_title_and_code():
     titles_df = pd.read_csv('data/processed/train.csv')
     indexes = titles_df['index'].to_list()
-    titles = titles_df['title_raw'].astype(str).to_list()
+    titles = titles_df['raw_title'].astype(str).to_list()
     codes = titles_df['answer_code_raw'].astype(str).to_list()
     titles_and_codes = [(title, code) for title, code in zip(titles, codes)]
     id_to_title_and_code_map = {index: {'title': title_and_code[0], 'code': title_and_code[1]}
