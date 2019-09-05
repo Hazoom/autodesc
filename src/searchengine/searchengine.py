@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 from flask_restplus import Resource, Api
 import pandas as pd
 import nmslib
+import tensorflow as tf
 from keras.preprocessing.sequence import pad_sequences
 
 from preprocessing import textpreprocess
@@ -12,6 +13,9 @@ from sharedvectors.sharedvectors import load_shared_vector_space_model
 
 app = Flask(__name__)
 api = Api(app, version='1.0', title='Code Semantic Search Engine (Datahack 2019)')
+
+global graph
+graph = tf.get_default_graph()
 
 
 def _get_param_or_default(args, param_name, default):
@@ -59,7 +63,10 @@ class ClustersSearchAPI(Resource):
         print(f'Call to /comment api with query: "{code}" and k: "{top_k}"')
 
         query_preprocessed = app.code_pre_processor.transform([code])
-        query_vectors = app.shared_vector_model.predict(query_preprocessed, batch_size=1)
+
+        with graph.as_default():
+            query_vectors = app.shared_vector_model.predict(query_preprocessed, batch_size=1)
+
         query_vector = query_vectors[0]
         indexes, dists = app.title_search_index.knnQuery(query_vector, k=top_k)
         comments = []
@@ -101,6 +108,7 @@ if __name__ == "__main__":
     # initialize shared vector space model
     shared_vector_model = \
         load_shared_vector_space_model('data/models/shared_space/shared_vector_space_model_best.h5')
+    shared_vector_model.summary()
 
     # initialize bert vector service
     bert_vectors_service = bertvectors.BertVectorsService(score_model_path='data/score_model/score_model.pkl')
