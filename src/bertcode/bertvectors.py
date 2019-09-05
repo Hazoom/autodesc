@@ -51,13 +51,15 @@ def create_vectors(titles_file: str,
     indexes = titles_df['index'].to_list()
     titles = titles_df['title'].to_list()
     results = {}
+    finished_index = 0
     for index, title in zip(indexes, titles):
         vector = bert_service.get_vectors([title])[0]
         results[index] = vector
 
-        if index % 100 == 0 and index > 0:
+        finished_index += 1
+        if finished_index % 100 == 0 and finished_index > 0:
             print('Finished {} out of {}'.format(str(index), str(len(titles))))
-    print('Finished {} out of {}'.format(str(len(titles)), str(len(titles))))
+    print('Finished {} out of {}'.format(str(finished_index), str(len(titles))))
 
     dir_path = os.path.dirname(output_file)
     if not os.path.exists(dir_path):
