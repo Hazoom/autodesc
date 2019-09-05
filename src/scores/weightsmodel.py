@@ -39,12 +39,12 @@ class SentenceWeightModel:
 
     def load_model(self, model_name):
         print(f'Loading pre-trained COUNT scores model with name: {model_name}')
-
         if not os.path.exists(model_name):
             raise Exception(f'Model {model_name} not found!')
 
         with open(model_name, 'rb') as input_file_pointer:
             self.score_model = pickle.load(input_file_pointer)
+        print(f'Loading pre-trained COUNT scores model with name: {model_name}')
 
     def train(self,
               titles_file: str,

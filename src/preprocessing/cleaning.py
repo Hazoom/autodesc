@@ -44,7 +44,7 @@ def clean_data(input_file: str,
 
     # filter relevant columns
     code_df = code_df.filter(['title', 'answer_code'], axis=1)
-    code_df.to_csv(output_file)
+    code_df.to_csv(output_file, index_label='index', index=True)
 
     with open(bert_titles_file, 'w+') as out_fp:
         lines = code_df['title'].to_list()
