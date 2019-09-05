@@ -2,10 +2,9 @@ import os
 import argparse
 import argcomplete
 import numpy as np
-import pickle
 from keras import optimizers
 from keras.callbacks import CSVLogger, ModelCheckpoint
-from keras.layers import Input, GRU, Dense, Embedding, BatchNormalization
+from keras.layers import Input, Dense, BatchNormalization
 from keras.models import Model
 
 from bertcode import bertvectors
@@ -14,59 +13,43 @@ from seq2seq.modelevaluation import load_model
 from preprocessing import textpreprocess
 
 
-def build_model(word_emb_dim: int,
-                hidden_state_dim: int,
-                encoder_seq_len: int,
-                n_encoder_tokens: int,
-                n_decoder_tokens: int,
-                learning_rate: float = 0.00005):
-    # Encoder Model
-    encoder_inputs = Input(shape=(encoder_seq_len,), name='Encoder-Input')
+def build_shared_vector_model(encoder_model,
+                              n_encoder_tokens: int,
+                              vector_shape: int,
+                              learning_rate: float):
+    shared_vector_input = Input(shape=(n_encoder_tokens,), name='shared-vector-input')
+    enc_out = encoder_model(shared_vector_input)
 
-    # Word embedding for encoder (i.e. code)
-    encoder_embeddings = Embedding(n_encoder_tokens, word_emb_dim,
-                                   name='Code-Embedding', mask_zero=False)(encoder_inputs)
-    encoder_bn = BatchNormalization(name='Encoder-Batchnorm-1')(encoder_embeddings)
+    shared_vector_dense = Dense(units=300, activation='relu')(enc_out)
+    shared_vector_bn = BatchNormalization(name='Batch-Normalization')(shared_vector_dense)
 
-    # We do not need the `encoder_output` just the hidden state.
-    encoder_out, encoder_state = GRU(hidden_state_dim, return_sequences=True, return_state=True,
-                                     name='Encoder-Last-GRU', dropout=.5, recurrent_dropout=.4)(encoder_bn)
+    # The output of the shared vector space model should be in the same dimension as the title vectors
+    shared_vector_out = Dense(units=vector_shape)(shared_vector_bn)
+    shared_vector_model = Model(inputs=[shared_vector_input], outputs=shared_vector_out,
+                                name='Shared-Vector-Space-Model')
+    shared_vector_model.compile(optimizer=optimizers.Nadam(lr=learning_rate), loss='cosine_proximity')
+    return shared_vector_model
 
-    # Encapsulate the encoder as a separate entity so we can just encode without decoding if we want to
-    encoder_model = Model(inputs=encoder_inputs, outputs=encoder_state, name='Encoder-Model')
 
-    seq2seq_encoder_out = encoder_model(encoder_inputs)
+def _train(shared_vector_model,
+           encoder_vectors,
+           title_vectors,
+           output_dir,
+           epochs,
+           batch_size,
+           validation_split):
+    csv_logger = CSVLogger(os.path.join(output_dir, 'shared_vector_space_model.log'))
 
-    # Decoder Model
-    decoder_inputs = Input(shape=(None,), name='Decoder-Input')  # for teacher forcing
+    model_checkpoint = ModelCheckpoint(
+        os.path.join(output_dir, 'shared_vector_space_model_weights_best.hdf5'),
+        save_best_only=True)
 
-    # Word Embedding For Decoder (i.e. titles)
-    dec_emb = Embedding(n_decoder_tokens, word_emb_dim, name='Title-Embedding', mask_zero=False)(decoder_inputs)
-    dec_bn = BatchNormalization(name='Decoder-Batchnorm-1')(dec_emb)
-
-    # Set up the decoder, using `decoder_state_input` as initial state.
-    decoder_gru = GRU(hidden_state_dim, return_state=True, return_sequences=True, name='Decoder-GRU',
-                      dropout=.5, recurrent_dropout=.4)
-    decoder_gru_output, _ = decoder_gru(dec_bn, initial_state=seq2seq_encoder_out)
-    decoder_bn = BatchNormalization(name='Decoder-Batchnorm-2')(decoder_gru_output)
-
-    # # add attention layer
-    # attn_layer = AttentionLayer(name='attention_layer')
-    # attn_out, attn_states = attn_layer([encoder_out, decoder_gru_output])
-    #
-    # # concatenate the attn_out and decoder_out as an input to the softmax layer
-    # decoder_concat_input = Concatenate(axis=-1, name='concat_layer')([decoder_gru_output, attn_out])
-
-    # Define TimeDistributed softmax layer
-    decoder_dense = Dense(n_decoder_tokens, activation='softmax', name='Final-Output-Dense')
-    decoder_outputs = decoder_dense(decoder_bn)
-
-    seq2seq_model = Model([encoder_inputs, decoder_inputs], decoder_outputs)
-
-    seq2seq_model.compile(optimizer=optimizers.Nadam(lr=learning_rate),
-                          loss='sparse_categorical_crossentropy')
-
-    return seq2seq_model
+    shared_vector_model.fit([encoder_vectors], title_vectors,
+                            batch_size=batch_size,
+                            epochs=epochs,
+                            validation_split=validation_split,
+                            callbacks=[csv_logger, model_checkpoint])
+    return shared_vector_model
 
 
 def train_shared_vector_space_model(train_code_vectors_file: str,
@@ -100,6 +83,29 @@ def train_shared_vector_space_model(train_code_vectors_file: str,
     encoder_model = extract_encoder_model(seq2seq_model)
     encoder_model.summary()
 
+    # Freeze Encoder Model
+    for layer in encoder_model.layers:
+        layer.trainable = False
+        print(f'Layer: {layer} trainable: {layer.trainable}')
+
+    shared_vector_model = build_shared_vector_model(encoder_model,
+                                                    encoder_vectors.shape[1],
+                                                    title_vectors.shape[1],
+                                                    learning_rate)
+    print('\n\n')
+    shared_vector_model.summary()
+
+    model = _train(shared_vector_model,
+                   encoder_vectors,
+                   title_vectors,
+                   output_dir,
+                   epochs,
+                   batch_size,
+                   validation_split)
+
+    # save model
+    model.save(os.path.join(output_dir, 'shared_vector_space_model_weights_best.h5'))
+
 
 def main():
     argument_parser = argparse.ArgumentParser()
@@ -121,7 +127,7 @@ def main():
     argument_parser.add_argument("--validation-split", type=float, help='Validation size. Default: 0.1', required=False,
                                  default=0.1)
     argument_parser.add_argument("--learning-rate", type=float, help='Learning rate. Default: 0.00005',
-                                 required=False, default=0.00005)
+                                 required=False, default=0.002)
     argcomplete.autocomplete(argument_parser)
     args = argument_parser.parse_args()
     train_shared_vector_space_model(args.code_vectors_file,

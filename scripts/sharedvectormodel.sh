@@ -1,0 +1,2 @@
+#!/usr/bin/env bash
+python src/sharedvectors/sharedvectorsmodel.py --code-vectors-file data/vectors/train_code_vectors.npy --code-preprocessor-file data/vectors/code_pre_processor.dpkl --title-preprocessor-file data/vectors/title_pre_processor.dpkl --titles-bert-vectors-file data/bert_vectors/titles_bert_train_vectors.pkl --model-weights-file data/models/model_weights_best.hdf5 --output-dir data/models/shared_space --batch-size 256
