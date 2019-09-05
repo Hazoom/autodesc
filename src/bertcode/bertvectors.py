@@ -58,7 +58,7 @@ def create_vectors(titles_file: str,
 
         finished_index += 1
         if finished_index % 100 == 0 and finished_index > 0:
-            print('Finished {} out of {}'.format(str(index), str(len(titles))))
+            print('Finished {} out of {}'.format(str(finished_index), str(len(titles))))
     print('Finished {} out of {}'.format(str(finished_index), str(len(titles))))
 
     dir_path = os.path.dirname(output_file)
