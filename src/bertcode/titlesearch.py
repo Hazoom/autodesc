@@ -32,7 +32,7 @@ class TitleSearchEngine:
         query = self.bert_vectors_service.get_vectors([title])
         idxs, dists = self.search_index.knnQuery(query, k=top_k)
 
-        print(f'Sample: {title}')
+        print(f'\nSample: {title}')
         for idx, dist in zip(idxs, dists):
             print(f'Cosine dist:{dist:.4f}\n---------------\n', self.id_to_tile[self.index_to_id[idx]])
 
