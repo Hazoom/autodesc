@@ -71,6 +71,20 @@ def train_shared_vector_space_model(train_code_vectors_file: str,
                                     batch_size: int,
                                     validation_split: float,
                                     learning_rate: float):
+    """
+    Copyright (c) 2018 Hamel Husain
+    :param train_code_vectors_file:
+    :param train_code_preprocessor_file:
+    :param train_title_preprocessor_file:
+    :param titles_bert_vectors_file:
+    :param model_weights_file:
+    :param output_dir:
+    :param epochs:
+    :param batch_size:
+    :param validation_split:
+    :param learning_rate:
+    :return:
+    """
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
@@ -150,7 +164,7 @@ def main():
     argument_parser.add_argument("--epochs", type=int, help='Number of epochs. Default: 16', required=False,
                                  default=16)
     argument_parser.add_argument("--batch-size", type=int, help='Batch size. Default: 32', required=False,
-                                 default=32)
+                                 default=256)
     argument_parser.add_argument("--validation-split", type=float, help='Validation size. Default: 0.1', required=False,
                                  default=0.1)
     argument_parser.add_argument("--learning-rate", type=float, help='Learning rate. Default: 0.00005',

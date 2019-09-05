@@ -220,7 +220,7 @@ def main():
     argument_parser.add_argument("--epochs", type=int, help='Number of epochs. Default: 16', required=False,
                                  default=16)
     argument_parser.add_argument("--batch-size", type=int, help='Batch size. Default: 32', required=False,
-                                 default=32)
+                                 default=256)
     argument_parser.add_argument("--validation-split", type=float, help='Validation size. Default: 0.1', required=False,
                                  default=0.1)
     argument_parser.add_argument("--learning-rate", type=float, help='Learning rate. Default: 0.00005',
