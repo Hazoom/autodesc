@@ -71,7 +71,7 @@ def create_vectors(titles_file: str,
             results[index] = vector
 
         finished_index += 1
-        if finished_index % 100 == 0 and finished_index > 0:
+        if finished_index % 10 == 0 and finished_index > 0:
             print('Finished {} out of {} chunks'.format(str(finished_index), str(len(index_and_titles_chunks))))
     print('Finished {} out of {}'.format(str(finished_index), str(len(index_and_titles_chunks))))
 
