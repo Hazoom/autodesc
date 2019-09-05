@@ -56,7 +56,7 @@ def create_vectors(titles_file: str,
     titles_df = pd.read_csv(titles_file)
     indexes = titles_df['index'].to_list()
     titles = titles_df['title'].to_list()
-    index_and_titles_list = [(index, title) for index, title in zip(indexes, titles)][0:40]
+    index_and_titles_list = [(index, title) for index, title in zip(indexes, titles)]
     results = {}
     finished_index = 0
     index_and_titles_chunks = list(chunks(index_and_titles_list, 32))
