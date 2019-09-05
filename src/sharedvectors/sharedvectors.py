@@ -30,7 +30,7 @@ def create_shared_vectors(train_code_vectors_file: str,
     print('Finished predicting titles vectors')
 
     results = {index: vector for index, vector in enumerate(titles_vectors)}
-    with open(output_dir, 'wb') as out_fp:
+    with open(os.path.join(output_dir, 'predicted_titles.pkl'), 'wb') as out_fp:
         pickle.dump(results, out_fp)
 
 
