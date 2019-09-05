@@ -45,6 +45,31 @@ class ClustersSearchAPI(Resource):
         return jsonify(results)
 
 
+@api.route('/datahack2019/comment')
+class ClustersSearchAPI(Resource):
+    @api.doc(params={'code': 'Python code',
+                     'k': 'Top k. Default: 3'},
+             responses={200: 'Success'},
+             description='Generated top k best comments for a given Python code')
+    def get(self):
+        start_time = datetime.now()
+        code = request.args.get("query")
+        top_k = int(_get_param_or_default(request.args, "k", '3'))
+        print(f'Call to /comment api with query: {code} and k: {top_k}')
+
+        query_preprocessed = app.code_pre_processor.transform([code])[0]
+        query_vector = app.shared_vector_model.predict([query_preprocessed], batch_size=1)
+        indexes, dists = app.title_search_index.knnQuery(query_vector, k=top_k)
+        comments = []
+        for idx, dist in zip(indexes, dists):
+            comments.append({'comment': app.id_to_title_and_code[app.index_to_id[idx]]['title'],
+                             'similarity': 1.0 - dist})
+        results = {'comments': {}}
+
+        print('Total process time {} milliseconds'.format(_get_elapsed_time_in_ms(start_time)))
+        return jsonify(results)
+
+
 def _get_id_to_title_and_code():
     titles_df = pd.read_csv('data/processed/train.csv')
     indexes = titles_df['index'].to_list()
@@ -53,7 +78,7 @@ def _get_id_to_title_and_code():
     titles_and_codes = [(title, code) for title, code in zip(titles, codes)]
     id_to_title_and_code_map = {index: {'title': title_and_code[0], 'code': title_and_code[1]}
                                 for index, title_and_code in zip(indexes, titles_and_codes)}
-    print('Loaded {} pairs of title and code'.format(str(len(id_to_title_and_code))))
+    print('Loaded {} pairs of title and code'.format(str(len(id_to_title_and_code_map))))
     return id_to_title_and_code_map
 
 
