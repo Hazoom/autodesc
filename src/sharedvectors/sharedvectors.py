@@ -27,6 +27,7 @@ def create_shared_vectors(train_code_vectors_file: str,
 
     print('Start predicting titles vectors...')
     titles_vectors = shared_vector_model.predict(encoder_vectors, batch_size=batch_size)
+    assert titles_vectors.shape[0] == encoder_vectors.shape[0]
     print('Finished predicting titles vectors')
 
     results = {index: vector for index, vector in enumerate(titles_vectors)}
