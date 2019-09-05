@@ -27,7 +27,7 @@ import argcomplete
 import numpy as np
 from keras import optimizers
 from keras.callbacks import CSVLogger, ModelCheckpoint
-from keras.layers import Input, GRU, Dense, Embedding, BatchNormalization, TimeDistributed, Concatenate
+from keras.layers import Input, GRU, Dense, Embedding, BatchNormalization
 from keras.models import Model
 
 from preprocessing import textpreprocess

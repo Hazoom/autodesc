@@ -56,8 +56,8 @@ def evaluate_seq2seq(code_preprocessor_file: str,
 
     # evaluate model with BLEU score
     blue_score = seq2seq_inference.evaluate_model(code_strings=test_codes,
-                                     title_strings=test_titles,
-                                     max_len=title_pre_processor.max_length)
+                                                  title_strings=test_titles,
+                                                  max_len=title_pre_processor.max_length)
     print(f'BLEU score on test set: {blue_score}')
 
 

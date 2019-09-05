@@ -209,7 +209,7 @@ def parse_data(train_input_file: str,
     train_title_vectors = title_pre_processor.fit_transform(train_df['title'].tolist())
     print('Finished fitting pre-processor on train titles (1/2)')
 
-    code_pre_processor = TextPreprocessor(mode='code', append_borders=False, n_vocab=20000, max_length=30)
+    code_pre_processor = TextPreprocessor(mode='code', append_borders=False, n_vocab=20000, max_length=20)
 
     print('Fitting pre-processor on train codes... (2/2)')
     train_code_vectors = code_pre_processor.fit_transform(train_df['answer_code'].astype(str).tolist())
