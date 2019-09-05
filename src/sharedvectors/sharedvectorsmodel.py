@@ -34,21 +34,30 @@ def build_shared_vector_model(encoder_model,
 def _train(shared_vector_model,
            encoder_vectors,
            title_vectors,
-           output_dir,
-           epochs,
-           batch_size,
-           validation_split):
+           output_dir: str,
+           epochs: int,
+           batch_size: int,
+           validation_split: float,
+           initial_epoch: int = None):
     csv_logger = CSVLogger(os.path.join(output_dir, 'shared_vector_space_model.log'))
 
     model_checkpoint = ModelCheckpoint(
         os.path.join(output_dir, 'shared_vector_space_model_weights_best.hdf5'),
         save_best_only=True)
 
-    shared_vector_model.fit([encoder_vectors], title_vectors,
-                            batch_size=batch_size,
-                            epochs=epochs,
-                            validation_split=validation_split,
-                            callbacks=[csv_logger, model_checkpoint])
+    if initial_epoch:
+        shared_vector_model.fit([encoder_vectors], title_vectors,
+                                batch_size=batch_size,
+                                epochs=epochs,
+                                initial_epoch=initial_epoch,
+                                validation_split=validation_split,
+                                callbacks=[csv_logger, model_checkpoint])
+    else:
+        shared_vector_model.fit([encoder_vectors], title_vectors,
+                                batch_size=batch_size,
+                                epochs=epochs,
+                                validation_split=validation_split,
+                                callbacks=[csv_logger, model_checkpoint])
     return shared_vector_model
 
 
@@ -95,16 +104,34 @@ def train_shared_vector_space_model(train_code_vectors_file: str,
     print('\n\n')
     shared_vector_model.summary()
 
-    model = _train(shared_vector_model,
-                   encoder_vectors,
-                   title_vectors,
-                   output_dir,
-                   epochs,
-                   batch_size,
-                   validation_split)
+    shared_vector_model = _train(shared_vector_model,
+                                 encoder_vectors,
+                                 title_vectors,
+                                 output_dir,
+                                 epochs,
+                                 batch_size,
+                                 validation_split)
 
     # save model
-    model.save(os.path.join(output_dir, 'shared_vector_space_model_weights_best.h5'))
+    shared_vector_model.save(os.path.join(output_dir, 'shared_vector_space_model_weights_best.h5'))
+
+    # UnFreeze Shared Vector Model
+    for layer in shared_vector_model.layers:
+        layer.trainable = True
+        print(f'Layer: {layer} trainable: {layer.trainable}')
+
+    # train it again for several epochs with unfreezed layers to fit on the task
+    shared_vector_model = _train(shared_vector_model,
+                                 encoder_vectors,
+                                 title_vectors,
+                                 output_dir,
+                                 epochs + 5,
+                                 batch_size,
+                                 validation_split / 2.0,
+                                 initial_epoch=epochs + 1)
+
+    # save model
+    shared_vector_model.save(os.path.join(output_dir, 'shared_vector_space_model_weights_best.h5'))
 
 
 def main():
