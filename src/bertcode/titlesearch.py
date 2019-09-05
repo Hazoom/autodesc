@@ -34,7 +34,7 @@ class TitleSearchEngine:
 
         print(f'\nSample: {title}')
         for idx, dist in zip(idxs, dists):
-            print(f'Cosine dist:{dist:.4f}\n---------------\n', self.id_to_tile[self.index_to_id[idx]])
+            print(f'Cosine similarity:{1.0 - dist:.4f}\n---------------\n', self.id_to_tile[self.index_to_id[idx]])
 
 
 def test():
