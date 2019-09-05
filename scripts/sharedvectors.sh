@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-python src/sharedvectors/sharedvectors.py --code-vectors-file data/vectors/train_code_vectors.npy --code-preprocessor-file data/vectors/code_pre_processor.dpkl --shared-vector-model-file data/models/shared_space/shared_vector_space_model_weights_best.h5 --output-dir data/vectors/predicted_titles --batch-size 256
+python src/sharedvectors/sharedvectors.py --code-vectors-file data/vectors/train_code_vectors.npy --code-preprocessor-file data/vectors/code_pre_processor.dpkl --shared-vector-model-file data/models/shared_space/shared_vector_space_model_best.h5 --output-dir data/vectors/predicted_titles --batch-size 256

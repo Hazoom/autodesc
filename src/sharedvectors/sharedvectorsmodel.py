@@ -127,7 +127,7 @@ def train_shared_vector_space_model(train_code_vectors_file: str,
                                  validation_split)
 
     # save model
-    shared_vector_model.save(os.path.join(output_dir, 'shared_vector_space_model_weights_best.h5'))
+    shared_vector_model.save(os.path.join(output_dir, 'shared_vector_space_model_best.h5'))
 
     # UnFreeze Shared Vector Model
     for layer in shared_vector_model.layers:
@@ -145,7 +145,7 @@ def train_shared_vector_space_model(train_code_vectors_file: str,
                                  initial_epoch=epochs)
 
     # save model
-    shared_vector_model.save(os.path.join(output_dir, 'shared_vector_space_model_weights_best.h5'))
+    shared_vector_model.save(os.path.join(output_dir, 'shared_vector_space_model_best.h5'))
 
 
 def main():

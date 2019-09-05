@@ -4,6 +4,7 @@ from flask import Flask, request, jsonify
 from flask_restplus import Resource, Api
 import pandas as pd
 import nmslib
+from keras.preprocessing.sequence import pad_sequences
 
 from preprocessing import textpreprocess
 from bertcode import bertvectors
@@ -53,12 +54,13 @@ class ClustersSearchAPI(Resource):
              description='Generated top k best comments for a given Python code')
     def get(self):
         start_time = datetime.now()
-        code = request.args.get("query")
+        code = request.args.get("code")
         top_k = int(_get_param_or_default(request.args, "k", '3'))
         print(f'Call to /comment api with query: "{code}" and k: "{top_k}"')
 
-        query_preprocessed = app.code_pre_processor.transform([code])[0]
-        query_vector = app.shared_vector_model.predict([query_preprocessed], batch_size=1)
+        query_preprocessed = app.code_pre_processor.transform([code])
+        query_vectors = app.shared_vector_model.predict(query_preprocessed, batch_size=1)
+        query_vector = query_vectors[0]
         indexes, dists = app.title_search_index.knnQuery(query_vector, k=top_k)
         comments = []
         for idx, dist in zip(indexes, dists):
@@ -98,7 +100,7 @@ if __name__ == "__main__":
 
     # initialize shared vector space model
     shared_vector_model = \
-        load_shared_vector_space_model('data/models/shared_space/shared_vector_space_model_weights_best.h5')
+        load_shared_vector_space_model('data/models/shared_space/shared_vector_space_model_best.h5')
 
     # initialize bert vector service
     bert_vectors_service = bertvectors.BertVectorsService(score_model_path='data/score_model/score_model.pkl')
