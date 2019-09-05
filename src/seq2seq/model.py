@@ -31,7 +31,6 @@ from keras.layers import Input, GRU, Dense, Embedding, BatchNormalization
 from keras.models import Model
 
 from preprocessing import textpreprocess
-from seq2seq.layers.attention import AttentionLayer
 
 
 # fix random seed for reproducibility
