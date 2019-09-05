@@ -128,7 +128,7 @@ def train_shared_vector_space_model(train_code_vectors_file: str,
                                  epochs + 5,
                                  batch_size,
                                  validation_split / 2.0,
-                                 initial_epoch=epochs + 1)
+                                 initial_epoch=epochs)
 
     # save model
     shared_vector_model.save(os.path.join(output_dir, 'shared_vector_space_model_weights_best.h5'))
