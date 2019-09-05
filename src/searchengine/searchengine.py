@@ -31,7 +31,7 @@ class ClustersSearchAPI(Resource):
         start_time = datetime.now()
         query = request.args.get("query")
         top_k = int(_get_param_or_default(request.args, "k", '3'))
-        print(f'Call to /code api with query: {query} and k: {top_k}')
+        print(f'Call to /code api with query: "{query}" and k: "{top_k}"')
 
         query_vector = app.bert_vectors_service.get_vectors([query])[0]
         indexes, dists = app.title_search_index.knnQuery(query_vector, k=top_k)
@@ -39,7 +39,7 @@ class ClustersSearchAPI(Resource):
         for idx, dist in zip(indexes, dists):
             codes.append({'code': app.id_to_title_and_code[app.index_to_id[idx]]['code'],
                           'similarity': 1.0 - dist})
-        results = {'codes': {}}
+        results = {'codes': codes}
 
         print('Total process time {} milliseconds'.format(_get_elapsed_time_in_ms(start_time)))
         return jsonify(results)
@@ -55,7 +55,7 @@ class ClustersSearchAPI(Resource):
         start_time = datetime.now()
         code = request.args.get("query")
         top_k = int(_get_param_or_default(request.args, "k", '3'))
-        print(f'Call to /comment api with query: {code} and k: {top_k}')
+        print(f'Call to /comment api with query: "{code}" and k: "{top_k}"')
 
         query_preprocessed = app.code_pre_processor.transform([code])[0]
         query_vector = app.shared_vector_model.predict([query_preprocessed], batch_size=1)
@@ -64,7 +64,7 @@ class ClustersSearchAPI(Resource):
         for idx, dist in zip(indexes, dists):
             comments.append({'comment': app.id_to_title_and_code[app.index_to_id[idx]]['title'],
                              'similarity': 1.0 - dist})
-        results = {'comments': {}}
+        results = {'comments': comments}
 
         print('Total process time {} milliseconds'.format(_get_elapsed_time_in_ms(start_time)))
         return jsonify(results)
