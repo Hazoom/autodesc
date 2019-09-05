@@ -43,6 +43,12 @@ def test():
     print(vectors_demo[0])
 
 
+def chunks(l, n):
+    """Yield successive n-sized chunks from l."""
+    for i in range(0, len(l), n):
+        yield l[i:i + n]
+
+
 def create_vectors(titles_file: str,
                    output_file: str,
                    score_model_path: str):
@@ -50,16 +56,24 @@ def create_vectors(titles_file: str,
     titles_df = pd.read_csv(titles_file)
     indexes = titles_df['index'].to_list()
     titles = titles_df['title'].to_list()
+    index_and_titles_list = [(index, title) for index, title in zip(indexes, titles)][0:40]
     results = {}
     finished_index = 0
-    for index, title in zip(indexes, titles):
-        vector = bert_service.get_vectors([title])[0]
-        results[index] = vector
+    index_and_titles_chunks = list(chunks(index_and_titles_list, 32))
+    print('Split the {} rows into {} chunks'.format(
+        str(len(index_and_titles_list)), str(len(index_and_titles_chunks)))
+    )
+    for chunk in index_and_titles_chunks:
+        chunk_titles = [item[1] for item in chunk]
+        chunk_indexes = [item[0] for item in chunk]
+        vectors = bert_service.get_vectors(chunk_titles)
+        for index, vector in zip(chunk_indexes, vectors):
+            results[index] = vector
 
         finished_index += 1
         if finished_index % 100 == 0 and finished_index > 0:
-            print('Finished {} out of {}'.format(str(finished_index), str(len(titles))))
-    print('Finished {} out of {}'.format(str(finished_index), str(len(titles))))
+            print('Finished {} out of {} chunks'.format(str(finished_index), str(len(index_and_titles_chunks))))
+    print('Finished {} out of {}'.format(str(finished_index), str(len(index_and_titles_chunks))))
 
     dir_path = os.path.dirname(output_file)
     if not os.path.exists(dir_path):
