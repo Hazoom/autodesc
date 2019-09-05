@@ -6,6 +6,7 @@ from keras import optimizers
 from keras.callbacks import CSVLogger, ModelCheckpoint
 from keras.layers import Input, GRU, Dense, Embedding, BatchNormalization
 from keras.models import Model
+from keras.utils.vis_utils import plot_model
 
 from preprocessing import textpreprocess
 
@@ -56,6 +57,7 @@ def train(train_code_vectors_file: str,
                         learning_rate=learning_rate)
 
     model.summary()
+    plot_model(model, to_file=os.path.join(output_dir, 'model_plot.png'), show_shapes=True, show_layer_names=True)
 
     csv_logger = CSVLogger(os.path.join(output_dir, 'model.log'))
 
@@ -159,11 +161,21 @@ def train_seq2seq(code_vectors_file: str,
 
 
 def extract_encoder_model(model):
+    """
+    Copyright (c) 2018 Hamel Husain
+    :param model:
+    :return:
+    """
     encoder_model = model.get_layer('Encoder-Model')
     return encoder_model
 
 
 def extract_decoder_model(model):
+    """
+    Copyright (c) 2018 Hamel Husain
+    :param model:
+    :return:
+    """
     # the latent dimension is the dimension of the hidden state passed from the encoder to the decoder.
     latent_dim = model.get_layer('Encoder-Model').output_shape[-1]
 

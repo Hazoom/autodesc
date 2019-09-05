@@ -23,6 +23,7 @@ bert-serving-client = "*"
 jupyter = "*"
 flask = "*"
 flask-restplus = "*"
+pydot = "*"
 
 [requires]
 python_version = "3.6"
