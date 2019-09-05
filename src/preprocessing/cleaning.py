@@ -12,9 +12,7 @@ def _extract_code(code_text):
     if not matches:
         return ''
 
-    code = matches[0].strip()  # take the first code snippet in the code answer
-    code = clean_code(code)
-    return code
+    return matches[0].strip()  # take the first code snippet in the code answer
 
 
 def clean_code(code):
@@ -39,11 +37,13 @@ def clean_data(input_file: str,
                output_file: str,
                bert_titles_file: str):
     code_df = pd.read_csv(input_file)
-    code_df['answer_code'] = code_df['answer_body'].apply(_extract_code)
+    code_df['answer_code_raw'] = code_df['answer_body'].apply(_extract_code)
+    code_df['answer_code'] = code_df['answer_code_raw'].apply(clean_code)
+    code_df['raw_title'] = code_df['title'].to_list()
     code_df['title'] = code_df['title'].apply(clean_title)
 
     # filter relevant columns
-    code_df = code_df.filter(['title', 'answer_code'], axis=1)
+    code_df = code_df.filter(['title', 'answer_code', 'raw_title', 'answer_code_raw'], axis=1)
     code_df.to_csv(output_file, index_label='index', index=True)
 
     with open(bert_titles_file, 'w+') as out_fp:
