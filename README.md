@@ -1,7 +1,7 @@
-# You know, for searching code..
+# Have you ever dreamed about an AI that could understand a code snippet and tells you what it does?
 **Datahack 2019 Project**
 
-This is a semantic code search engine and auto code comment generation.
+This is an auto code description generation and code search engine project.
 
 It's based on StackOverFlow dataset, focusing on Data Science and Data Structures fields only.
 
