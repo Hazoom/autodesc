@@ -1,3 +1,6 @@
+"""
+Copyright (c) 2018 Hamel Husain
+"""
 import argparse
 import os
 from collections import OrderedDict
