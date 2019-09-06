@@ -36,5 +36,5 @@ They supply free trail of 300$ which is more than enough for this task.
 Please follow the scripts in `resources` folder for all running examples.
 
 **Acknowledgements**
-
-Some ideas derived from [hamelsmu](https://github.com/hamelsmu/).
+* [Amenity Analytics](https://www.amenityanalytics.com/) for the credit and resources. Thanks!
+* Some ideas derived from [hamelsmu](https://github.com/hamelsmu/).
