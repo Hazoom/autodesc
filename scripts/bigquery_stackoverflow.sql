@@ -9,6 +9,4 @@ join `bigquery-public-data.stackoverflow.posts_answers` as pa on pa.id = pq.acce
 where pq.creation_date >= '2016-01-01'
 and REGEXP_CONTAINS(pq.tags, 'pandas|tensorflow|keras|pytorch|torch|machine-learning|deep-learning|list|dictionary')
 and REGEXP_CONTAINS(pq.tags, 'python')
--- and REGEXP_CONTAINS(pq.tags, 'python|pandas|tensorflow|keras|pytorch|torch')
 and REGEXP_CONTAINS(pa.body, '<pre><code>')
--- and REGEXP_CONTAINS(pq.title, 'pandas')
