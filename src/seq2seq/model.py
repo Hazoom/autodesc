@@ -17,12 +17,22 @@ np.random.seed(seed)
 
 
 def load_encoder_inputs(file_path: str):
+    """
+    Copyright (c) 2018 Hamel Husain
+    :param file_path:
+    :return:
+    """
     code_vectors = np.load(file_path)
     print(f'Shape of encoder vectors: {code_vectors.shape}')
     return code_vectors
 
 
 def load_decoder_inputs(file_path: str):
+    """
+    Copyright (c) 2018 Hamel Husain
+    :param file_path:
+    :return:
+    """
     title_vectors = np.load(file_path)
     decoder_input_vectors = title_vectors[:, :-1]
     decoder_target_vectors = title_vectors[:, 1:]

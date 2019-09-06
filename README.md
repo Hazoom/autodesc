@@ -37,4 +37,4 @@ Please follow the scripts in `resources` folder for all running examples.
 
 **Acknowledgements**
 * [Amenity Analytics](https://www.amenityanalytics.com/) for the credit and resources. Thanks!
-* Some ideas derived from [hamelsmu](https://github.com/hamelsmu/).
+* Main idea derived from [hamelsmu](https://github.com/hamelsmu/code_search) with some modifications to fit to the problem of generating comment from code, mainly in the data, pre-processing, cleaning and sentence embedding mechanism.

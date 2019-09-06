@@ -10,6 +10,11 @@ from bertcode import bertvectors
 
 
 def create_nmslib_search_index(numpy_vectors):
+    """
+    Copyright (c) 2018 Hamel Husain
+    :param numpy_vectors:
+    :return:
+    """
     search_index = nmslib.init(method='hnsw', space='cosinesimil')
     search_index.addDataPointBatch(numpy_vectors)
     search_index.createIndex({'post': 2}, print_progress=True)

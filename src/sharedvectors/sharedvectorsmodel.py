@@ -17,6 +17,14 @@ def build_shared_vector_model(encoder_model,
                               n_encoder_tokens: int,
                               vector_shape: int,
                               learning_rate: float):
+    """
+    Copyright (c) 2018 Hamel Husain
+    :param encoder_model:
+    :param n_encoder_tokens:
+    :param vector_shape:
+    :param learning_rate:
+    :return:
+    """
     shared_vector_input = Input(shape=(n_encoder_tokens,), name='shared-vector-input')
     enc_out = encoder_model(shared_vector_input)
 
