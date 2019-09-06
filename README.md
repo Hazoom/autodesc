@@ -3,7 +3,8 @@
 
 This is a semantic code search engine and auto code comment generation.
 
-It's based on StackOverFlow dataset, focusing on Data Science and Data Structures fields only. 
+It's based on StackOverFlow dataset, focusing on Data Science and Data Structures fields only.
+
 
 # Directory Structure
 * `src`
@@ -19,8 +20,11 @@ It's based on StackOverFlow dataset, focusing on Data Science and Data Structure
 # Prerequisites
 1. Make sure to have `Python 3.6`
 2. Install `pipenv` by `pip install pipenv`
-3. Install all the requirements using the `Pipfile` and `Pipfile.lock` files by running the following command: `pipenv sync`.
-   **Note**: If using a GPU machine (recommended) one needs to change `tensorflow` to `tensorflow-gpu`,
+3. In your terminal, create a new virtual environment inside a new shell, using the command `pipenv shell` (make sure to run all commands inside this shell to not affect your global environment settings).
+    This should create a `.venv` folder inside the project's root folder.
+4. Install all the requirements using the `Pipfile` and `Pipfile.lock` files by running the following command: `pipenv sync`.
+    **Note**: If using a GPU machine (recommended) one needs to change `tensorflow` to `tensorflow-gpu`,
+
 
 # Getting Started
 1. Fetch the data from Google's [BigQuery](https://github.com/hamelsmu/) service using the script `scripts/bigquery_stackoverflow.sql`.
