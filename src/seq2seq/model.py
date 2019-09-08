@@ -1,3 +1,27 @@
+"""
+MIT License
+
+Original work: Copyright (c) 2018 Hamel Husain
+Modified work: Copyright (c) 2019 Moshe Hazoom
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 import argparse
 import os
 import argcomplete
@@ -17,22 +41,12 @@ np.random.seed(seed)
 
 
 def load_encoder_inputs(file_path: str):
-    """
-    Copyright (c) 2018 Hamel Husain
-    :param file_path:
-    :return:
-    """
     code_vectors = np.load(file_path)
     print(f'Shape of encoder vectors: {code_vectors.shape}')
     return code_vectors
 
 
 def load_decoder_inputs(file_path: str):
-    """
-    Copyright (c) 2018 Hamel Husain
-    :param file_path:
-    :return:
-    """
     title_vectors = np.load(file_path)
     decoder_input_vectors = title_vectors[:, :-1]
     decoder_target_vectors = title_vectors[:, 1:]
@@ -90,16 +104,6 @@ def build_model(word_emb_dim: int,
                 n_encoder_tokens: int,
                 n_decoder_tokens: int,
                 learning_rate: float = 0.00005):
-    """
-    Copyright (c) 2018 Hamel Husain
-    :param word_emb_dim:
-    :param hidden_state_dim:
-    :param encoder_seq_len:
-    :param n_encoder_tokens:
-    :param n_decoder_tokens:
-    :param learning_rate:
-    :return:
-    """
     # Encoder Model
     encoder_inputs = Input(shape=(encoder_seq_len,), name='Encoder-Input')
 
@@ -171,21 +175,11 @@ def train_seq2seq(code_vectors_file: str,
 
 
 def extract_encoder_model(model):
-    """
-    Copyright (c) 2018 Hamel Husain
-    :param model:
-    :return:
-    """
     encoder_model = model.get_layer('Encoder-Model')
     return encoder_model
 
 
 def extract_decoder_model(model):
-    """
-    Copyright (c) 2018 Hamel Husain
-    :param model:
-    :return:
-    """
     # the latent dimension is the dimension of the hidden state passed from the encoder to the decoder.
     latent_dim = model.get_layer('Encoder-Model').output_shape[-1]
 

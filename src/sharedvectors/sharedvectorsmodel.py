@@ -1,3 +1,27 @@
+"""
+MIT License
+
+Original work: Copyright (c) 2018 Hamel Husain
+Modified work: Copyright (c) 2019 Moshe Hazoom
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE.
+"""
 import os
 import argparse
 import argcomplete
@@ -17,14 +41,6 @@ def build_shared_vector_model(encoder_model,
                               n_encoder_tokens: int,
                               vector_shape: int,
                               learning_rate: float):
-    """
-    Copyright (c) 2018 Hamel Husain
-    :param encoder_model:
-    :param n_encoder_tokens:
-    :param vector_shape:
-    :param learning_rate:
-    :return:
-    """
     shared_vector_input = Input(shape=(n_encoder_tokens,), name='shared-vector-input')
     enc_out = encoder_model(shared_vector_input)
 
@@ -79,20 +95,6 @@ def train_shared_vector_space_model(train_code_vectors_file: str,
                                     batch_size: int,
                                     validation_split: float,
                                     learning_rate: float):
-    """
-    Copyright (c) 2018 Hamel Husain
-    :param train_code_vectors_file:
-    :param train_code_preprocessor_file:
-    :param train_title_preprocessor_file:
-    :param titles_bert_vectors_file:
-    :param model_weights_file:
-    :param output_dir:
-    :param epochs:
-    :param batch_size:
-    :param validation_split:
-    :param learning_rate:
-    :return:
-    """
     if not os.path.exists(output_dir):
         os.mkdir(output_dir)
 
